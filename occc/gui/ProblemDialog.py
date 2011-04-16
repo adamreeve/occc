@@ -1,7 +1,10 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from models import Problems
+try:
+  from models import Problems
+except ImportError:
+  from ..models import Problems
 
 class ProblemDialog(QDialog):
   def __init__(self,parent=None):

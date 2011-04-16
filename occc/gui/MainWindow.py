@@ -1,7 +1,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from gui import Console,ProblemTree,ProblemDialog
+import Console,ProblemTree,ProblemDialog
 
 class MainWindow(QMainWindow):
   def __init__(self,parent=None):
