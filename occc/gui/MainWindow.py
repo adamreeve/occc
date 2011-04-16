@@ -51,6 +51,10 @@ class MainWindow(QMainWindow):
     self.fileMenu.addSeparator()
     self.fileMenu.addAction(self.exitAction)
 
+    self.viewMenu = self.menuBar().addMenu('&View')
+    self.viewMenu.addAction(self.consoleDock.toggleViewAction())
+    self.viewMenu.addAction(self.problemTreeDock.toggleViewAction())
+
     self.helpMenu = self.menuBar().addMenu('&Help')
     self.helpMenu.addAction(self.aboutAction)
 
