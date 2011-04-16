@@ -3,7 +3,7 @@ Stores information for a problem to be solved by OpenCMISS
 """
 
 from QtCore import *
-from CMConstants import *
+from models.CMConstants import *
 
 class Problem:
   def __init__(self,name,pclass,ptype,psubtype):
