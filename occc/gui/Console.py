@@ -29,46 +29,35 @@ class Console(QWidget):
 
     self.setLayout(vlayout)
 
-    self.runButton.clicked.connect(self.runCommand)
-    self.commandLine.returnPressed.connect(self.runCommand)
+    self.runButton.clicked.connect(self.runCommandLine)
+    self.commandLine.returnPressed.connect(self.runCommandLine)
 
     self.history=[]
     self.historyIndex=0
-    self.namespace={}
+    self.commandRunner=CommandRunner()
 
-  def runCommand(self):
+    self.commandRunner.finished.connect(self.updateOutput)
+
+  def runCommandLine(self):
     command = self.commandLine.text().strip()
     if command != '':
-      tb=''
-      result=''
-      cmdOutput=StringIO.StringIO()
-      cmdError=StringIO.StringIO()
-      sys.stdout=cmdOutput
-      sys.stderr=cmdError
-      try:
-        result = str(eval(command,self.namespace,self.namespace))
-      except SyntaxError:
-        try:
-          exec command in self.namespace
-          result = cmdOutput.getvalue()
-          result += cmdError.getvalue()
-        except:
-          tb = traceback.format_exc()
-      except SystemExit:
-        pass
-      except:
-        tb = traceback.format_exc()
-      if tb != '':
-        tb = tb.strip().split('\n')
-        result = '\n'.join(tb[0:1]+tb[4:])
-      self.outputLog.appendPlainText('>>> '+command)
-      if result != '':
-        self.outputLog.appendPlainText(result.strip())
-      self.history.append(command)
-      self.historyIndex=len(self.history)
-      self.commandLine.setText('')
-      sys.stdout=sys.__stdout__
-      sys.stderr=sys.__stderr__
+      if not self.commandRunner.isRunning():
+        self.runButton.setDisabled(True)
+        self.commandRunner.setCommand(command)
+        self.commandRunner.start()
+
+  def updateOutput(self):
+    result = self.commandRunner.output
+    error = self.commandRunner.error_output
+    self.outputLog.appendPlainText('>>> '+self.commandRunner.command)
+    if result != '':
+      self.outputLog.appendPlainText(result.strip())
+    if error != '':
+      self.outputLog.appendPlainText(error.strip())
+    self.history.append(self.commandRunner.command)
+    self.historyIndex=len(self.history)
+    self.runButton.setDisabled(False)
+    self.commandLine.setText('')
 
   def keyPressEvent(self,event):
     if event.key() == Qt.Key_Up:
@@ -84,3 +73,41 @@ class Console(QWidget):
         self.historyIndex=len(self.history)
     else:
       super(Console,self).keyPressEvent(event)
+
+class CommandRunner(QThread):
+  def __init__(self,parent=None):
+    super(CommandRunner,self).__init__(parent)
+    self.namespace={}
+    self.command=''
+    self.output=''
+    self.error_output=''
+
+  def setCommand(self,command):
+    self.command=command
+
+  def run(self):
+    tb=''
+    self.output=''
+    self.error_output=''
+    cmdOutput=StringIO.StringIO()
+    cmdError=StringIO.StringIO()
+    sys.stdout=cmdOutput
+    sys.stderr=cmdError
+    try:
+      self.output = str(eval(self.command,self.namespace,self.namespace))
+    except SyntaxError:
+      try:
+        exec self.command in self.namespace
+        self.output = cmdOutput.getvalue()
+        self.error_output = cmdError.getvalue()
+      except:
+        tb = traceback.format_exc()
+    except SystemExit:
+      pass
+    except:
+      tb = traceback.format_exc()
+    if tb != '':
+      tb = tb.strip().split('\n')
+      self.error_output = '\n'.join(tb[0:1]+tb[4:])
+    sys.stdout=sys.__stdout__
+    sys.stderr=sys.__stderr__
