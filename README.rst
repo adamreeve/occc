@@ -1,52 +1,30 @@
 OpenCMISS Control Centre
 ========================
 
-Notes for a possible OpenCMISS graphical interface.
+Notes on a possible OpenCMISS graphical interface and trying some things out with
+PySide, the Qt bindings for Python.
 
-Required parts
---------------
- - Graphical interface for setting up OpenCMISS problems and saving them in a job file.
-   Can monitor solve progress then visualise the output produced.
+Requirements
+------------
 
- - Application to read job files and run problems using the OpenCMISS library.
-   Can be run in parallel with MPI.
+ - Graphical interface for setting up OpenCMISS problems, applying boundary conditions, setting solver options.
 
+ - Apply boundary conditions by selecting faces, nodes with CMGUI.
 
-Job files
----------
- - XML files? Wouldn't be simple to write jobs by hand.
+ - Can configure jobs to run over a network on multiple machines with MPI, or with MPI locally.
 
- - Link to FieldML files for defining meshes, CellML for constitutive laws, analytic boundary conditions.
+ - Can monitor solve progress then visualise the output produced using CMGUI.
 
+ - Will need either an application that reads and runs OpenCMISS jobs or could just use Python
+   scripts with the OpenCMISS Python bindings.
 
-CMGUI
------
- - Uses CMGUI to display a view of the mesh when setting up a problem.
-   Can select nodes to apply boundary conditions to using the CMGUI window.
-
- - Currently the CMGUI library isn't ready for this, can't build interactive applications due to lack
-   of multithreading? Not sure about this.
-   No Qt interface either, but they're supposedly working on this.
-
-
-Language Options
-----------------
- - C++ with Qt for gui.
-
- - C++/C/Fortran for job running component
-
- - Python might be nicer for both but it isn't supported by OpenCMISS or CMGUI yet.
-
+ - Link to FieldML files for defining meshes, and CellML for constitutive laws and analytic boundary conditions.
 
 Planning
 --------
-Store problem types with valid subtypes, same for equations in a header?
-We'd have to store integers rather than use the type variable names.
-Or should the OpenCMISS library have some way to get valid subtypes for a type, get all valid types.
 
-Maybe a description of the problem types etc should be used by the gui and also used to generate the modules
-used by OpenCMISS, but have extra info like descriptions that can be used by the gui
+For different problem types, could use Jinja2 templates to create a Python script to solve the problem.
 
-Tree view of problem setup.
+Tree view of problem setup, under each problem have geometry, boundary conditions, generated scripts, outputs.
 
-Can add multiple problems, with output stored for each problem.
+Can add multiple problems, with output stored for each problem. Maybe set a working directory for each problem.
