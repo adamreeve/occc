@@ -67,4 +67,4 @@ class MainWindow(QMainWindow):
   def createNewProblem(self):
     problemDialog = ProblemDialog.ProblemDialog(self)
     if problemDialog.exec_():
-      pass
+      self.problemTree.add_problem(problemDialog.subtypeCombo.itemData(problemDialog.subtypeCombo.currentIndex()), problemDialog.nameEdit.text())

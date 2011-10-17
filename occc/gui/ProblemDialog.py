@@ -2,15 +2,16 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 
 try:
-  from models import Problems
+  from problems import problem_types
 except ImportError:
-  from ..models import Problems
+  from ..problems import problem_types
 
 class ProblemDialog(QDialog):
   def __init__(self,parent=None):
     super(ProblemDialog,self).__init__(parent)
     self.setWindowTitle('Create new problem')
 
+    self.nameEdit = QLineEdit(self)
     self.classCombo = QComboBox(self)
     self.typeCombo = QComboBox(self)
     self.subtypeCombo = QComboBox(self)
@@ -20,12 +21,14 @@ class ProblemDialog(QDialog):
     self.typeCombo.setMinimumContentsLength(minLength)
     self.subtypeCombo.setMinimumContentsLength(minLength)
 
-    for problemClass in Problems.ProblemClasses:
-      self.classCombo.addItem(problemClass.name,userData=problemClass)
+    for problem_class in problem_types.keys():
+      self.classCombo.addItem(problem_class,userData=problem_types[problem_class])
     self.classCombo.currentIndexChanged.connect(self.updateTypes)
     self.typeCombo.currentIndexChanged.connect(self.updateSubtypes)
     self.updateTypes()
 
+    nameLabel = QLabel('Simulation &name',self)
+    nameLabel.setBuddy(self.nameEdit)
     classLabel = QLabel('Problem &class',self)
     classLabel.setBuddy(self.classCombo)
     typeLabel = QLabel('Problem &type',self)
@@ -37,6 +40,9 @@ class ProblemDialog(QDialog):
     buttonBox.accepted.connect(self.accept)
     buttonBox.rejected.connect(self.reject)
 
+    nameLayout = QHBoxLayout()
+    nameLayout.addWidget(nameLabel)
+    nameLayout.addWidget(self.nameEdit)
     classLayout = QHBoxLayout()
     classLayout.addWidget(classLabel)
     classLayout.addWidget(self.classCombo)
@@ -48,6 +54,7 @@ class ProblemDialog(QDialog):
     subtypeLayout.addWidget(self.subtypeCombo)
 
     vlayout = QVBoxLayout()
+    vlayout.addLayout(nameLayout)
     vlayout.addLayout(classLayout)
     vlayout.addLayout(typeLayout)
     vlayout.addLayout(subtypeLayout)
@@ -58,12 +65,12 @@ class ProblemDialog(QDialog):
 
   def updateTypes(self):
     self.typeCombo.clear()
-    for problemType in self.classCombo.itemData(self.classCombo.currentIndex()).types:
-      self.typeCombo.addItem(problemType.name,userData=problemType)
+    for problem_type in self.classCombo.itemData(self.classCombo.currentIndex()).keys():
+      self.typeCombo.addItem(problem_type,userData=self.classCombo.itemData(self.classCombo.currentIndex())[problem_type])
 
   def updateSubtypes(self):
     self.subtypeCombo.clear()
     if self.typeCombo.count() > 0:
-      for problemSubtype in self.typeCombo.itemData(self.typeCombo.currentIndex()).subtypes:
-        self.subtypeCombo.addItem(problemSubtype.name,userData=problemSubtype)
+      for problem_subtype in self.typeCombo.itemData(self.typeCombo.currentIndex()).keys():
+        self.subtypeCombo.addItem(problem_subtype,userData=self.typeCombo.itemData(self.typeCombo.currentIndex())[problem_subtype])
 
