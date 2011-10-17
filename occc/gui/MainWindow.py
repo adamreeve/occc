@@ -1,7 +1,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-import Console,ProblemTree,ProblemDialog
+import Console,ProblemTree,ProblemDialog,JobControl
 
 class MainWindow(QMainWindow):
   def __init__(self,parent=None):
@@ -24,9 +24,16 @@ class MainWindow(QMainWindow):
     self.problemTreeDock = QDockWidget("Problems")
     self.problemTreeDock.setWidget(self.problemTree)
 
+    self.jobControl = JobControl.JobControl()
+    self.jobsDock = QDockWidget("Jobs")
+    self.jobsDock.setWidget(self.jobControl)
+
     self.setCorner(Qt.BottomLeftCorner,Qt.LeftDockWidgetArea)
     self.addDockWidget(Qt.LeftDockWidgetArea,self.problemTreeDock)
+    self.addDockWidget(Qt.BottomDockWidgetArea,self.jobsDock)
     self.addDockWidget(Qt.BottomDockWidgetArea,self.consoleDock)
+    self.tabifyDockWidget(self.jobsDock, self.consoleDock)
+    self.setTabPosition(Qt.BottomDockWidgetArea, QTabWidget.TabPosition.North)
 
   def createActions(self):
     self.newProblemAction = QAction('&New Problem',self)
@@ -52,8 +59,9 @@ class MainWindow(QMainWindow):
     self.fileMenu.addAction(self.exitAction)
 
     self.viewMenu = self.menuBar().addMenu('&View')
-    self.viewMenu.addAction(self.consoleDock.toggleViewAction())
     self.viewMenu.addAction(self.problemTreeDock.toggleViewAction())
+    self.viewMenu.addAction(self.consoleDock.toggleViewAction())
+    self.viewMenu.addAction(self.jobsDock.toggleViewAction())
 
     self.helpMenu = self.menuBar().addMenu('&Help')
     self.helpMenu.addAction(self.aboutAction)
