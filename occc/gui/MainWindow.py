@@ -1,14 +1,14 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-import Console,ProblemTree,ProblemDialog,JobControl
+import Console,ProblemTree,ProblemDialog,JobControl,Scene
 
 class MainWindow(QMainWindow):
   def __init__(self,parent=None):
     super(MainWindow,self).__init__(parent)
     self.setWindowTitle('OpenCMISS Control Centre')
 
-    self.graphicsWindow = QWidget()
+    self.graphicsWindow = Scene.Scene()
     self.setCentralWidget(self.graphicsWindow)
 
     self.createDocks()
