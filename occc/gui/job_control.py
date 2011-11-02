@@ -1,13 +1,12 @@
-"""
-Control starting and stopping simulation jobs
-"""
-
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+
 class JobControl(QWidget):
-    def __init__(self,parent=None):
-        super(JobControl,self).__init__(parent)
+    """Control starting and stopping simulation jobs"""
+
+    def __init__(self, parent=None):
+        super(JobControl, self).__init__(parent)
 
         self.jobs_list = QTreeWidget(self)
         self.jobs_list.setColumnCount(3)
@@ -29,4 +28,3 @@ class JobControl(QWidget):
         hlayout.addLayout(vlayout)
 
         self.setLayout(hlayout)
-
